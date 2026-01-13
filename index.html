@@ -1,4 +1,4 @@
-<!DOCTYPE html> 
+<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
@@ -6,86 +6,81 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <style>
-body {
+body{
   background:#0e0e0e;
   color:#eee;
-  font-family: Arial, sans-serif;
+  font-family:Arial,sans-serif;
   padding:20px;
 }
-.ficha {
+.ficha{
   max-width:1100px;
   margin:auto;
   background:#1a1a1a;
   padding:20px;
   border-radius:12px;
 }
-h1,h2 { text-align:center; }
-.topo {
-  display:flex;
-  gap:20px;
-  flex-wrap:wrap;
-}
-.topo img {
+h1,h2{text-align:center;}
+.topo{display:flex;gap:20px;flex-wrap:wrap;}
+.topo img{
   width:180px;
   height:240px;
   object-fit:cover;
   border-radius:10px;
   border:2px solid #333;
 }
-.info span, td[contenteditable] {
+.info span,td[contenteditable]{
   background:#222;
   padding:4px 6px;
   border-radius:4px;
 }
-table {
+table{
   width:100%;
   border-collapse:collapse;
   margin-top:10px;
 }
-th,td {
+th,td{
   border:1px solid #333;
   padding:8px;
 }
-th { background:#222; }
-.barra {
+th{background:#222;}
+button{
+  background:#333;
+  color:#fff;
+  border:none;
+  padding:5px 8px;
+  margin:2px;
+  border-radius:5px;
+}
+button:hover{background:#555;}
+.secao{margin-top:30px;}
+select{
+  background:#222;
+  color:#fff;
+  border:1px solid #333;
+  padding:5px;
+}
+.barra{
   width:100%;
   height:18px;
   background:#333;
   border-radius:10px;
   overflow:hidden;
 }
-.barra div {
-  height:100%;
-  transition:width 0.4s;
-}
-.hp { background:#c0392b; }
-.mp { background:#2980b9; }
-button {
-  background:#333;
-  color:white;
-  border:none;
-  padding:5px 8px;
-  margin:2px;
-  border-radius:5px;
-}
-button:hover { background:#555; }
-.secao { margin-top:30px; }
-select {
-  background:#222;
-  color:#fff;
-  border:1px solid #333;
-  padding:5px;
-}
+.barra div{height:100%;transition:.3s;}
+.hp{background:#c0392b;}
+.mp{background:#2980b9;}
+canvas{max-width:100%;height:400px!important;}
 </style>
 </head>
 
 <body>
 <div class="ficha">
-<h1>🧙 Ficha de RPG</h1>
-<button onclick="salvarFicha()">💾 Salvar ficha</button>
+<h1>Ficha de RPG</h1>
+
+<button onclick="salvarAutomatico()">Salvar ficha</button>
 
 <div class="topo">
-<img src="https://via.placeholder.com/180x240">
+<img id="imgPersonagem" src="https://via.placeholder.com/180x240">
 
 <div class="info">
 <p><b>Nome:</b> <span contenteditable id="nome">Herói</span></p>
@@ -111,36 +106,40 @@ select {
 </select>
 </p>
 
-<div style="margin-top:10px">
-  <button onclick="definirImagem()">Adicionar imagem (link)</button>
-  <button onclick="removerImagem()">Remover imagem</button>
-</div>
-
 <p><b>Relação Elemental:</b>
 <span id="infoElemento" style="color:#ffd700;">—</span>
 </p>
+
+<button onclick="definirImagem()">Adicionar imagem</button>
+<button onclick="removerImagem()">Remover imagem</button>
 </div>
 </div>
 
 <div class="secao">
 <h2>Status de Combate</h2>
 <table>
-<tr><th>Item</th><th>Atual</th><th>Máx</th><th>Ações</th></tr>
+<tr><th>Status</th><th>Atual</th><th>Máx</th><th>Ações</th></tr>
+
 <tr>
-<td>PV / Vida</td>
+<td>Vida (HP)</td>
 <td contenteditable id="hpAtual">40</td>
 <td contenteditable id="hpMax">50</td>
 <td>
+<button onclick="alterarHP(-1)">-1</button>
+<button onclick="alterarHP(1)">+1</button>
 <button onclick="alterarHP(-5)">-5</button>
 <button onclick="alterarHP(5)">+5</button>
 </td>
 </tr>
 <tr><td colspan="4"><div class="barra"><div id="hpBar" class="hp"></div></div></td></tr>
+
 <tr>
-<td>PM / Mana</td>
+<td>Mana (MP)</td>
 <td contenteditable id="mpAtual">20</td>
 <td contenteditable id="mpMax">30</td>
 <td>
+<button onclick="alterarMP(-1)">-1</button>
+<button onclick="alterarMP(1)">+1</button>
 <button onclick="alterarMP(-5)">-5</button>
 <button onclick="alterarMP(5)">+5</button>
 </td>
@@ -153,12 +152,12 @@ select {
 <h2>Atributos</h2>
 <table>
 <tr><th>Atributo</th><th>Valor</th></tr>
-<tr><td>Força</td><td contenteditable class="atrib" id="forca">12</td></tr>
-<tr><td>Destreza</td><td contenteditable class="atrib" id="destreza">14</td></tr>
-<tr><td>Constituição</td><td contenteditable class="atrib" id="constituicao">13</td></tr>
-<tr><td>Inteligência</td><td contenteditable class="atrib" id="inteligencia">10</td></tr>
-<tr><td>Sabedoria</td><td contenteditable class="atrib" id="sabedoria">11</td></tr>
-<tr><td>Carisma</td><td contenteditable class="atrib" id="carisma">9</td></tr>
+<tr><td>Força</td><td contenteditable class="atrib">12</td></tr>
+<tr><td>Destreza</td><td contenteditable class="atrib">14</td></tr>
+<tr><td>Constituição</td><td contenteditable class="atrib">13</td></tr>
+<tr><td>Inteligência</td><td contenteditable class="atrib">10</td></tr>
+<tr><td>Sabedoria</td><td contenteditable class="atrib">11</td></tr>
+<tr><td>Carisma</td><td contenteditable class="atrib">9</td></tr>
 </table>
 
 <h2>Atributos de Combate</h2>
@@ -172,44 +171,12 @@ select {
 
 <canvas id="grafico"></canvas>
 </div>
-
 </div>
 
 <script>
-// ================= CONFIG =================
 const repNome = window.location.pathname.split("/")[1] || "local";
 
-// ================= VIDA / MANA =================
-function atualizarBarras(){
-  hpBar.style.width = (hpAtual.innerText / hpMax.innerText) * 100 + "%";
-  mpBar.style.width = (mpAtual.innerText / mpMax.innerText) * 100 + "%";
-}
-function alterarHP(v){ hpAtual.innerText = Math.max(0, +hpAtual.innerText + v); atualizarBarras(); }
-function alterarMP(v){ mpAtual.innerText = Math.max(0, +mpAtual.innerText + v); atualizarBarras(); }
-
-// ================= GRÁFICO =================
-const grafico = new Chart(document.getElementById("grafico"), {
-  type:"radar",
-  data:{
-    labels:["Força","Destreza","Constituição","Inteligência","Sabedoria","Carisma"],
-    datasets:[{
-      data:[12,14,13,10,11,9],
-      backgroundColor:"rgba(0,200,255,0.2)",
-      borderColor:"rgba(0,200,255,1)"
-    }]
-  },
-  options:{ scales:{ r:{ beginAtZero:true, max:20 } } }
-});
-
-document.querySelectorAll(".atrib").forEach(a=>{
-  a.addEventListener("input",()=>{
-    grafico.data.datasets[0].data =
-      [...document.querySelectorAll(".atrib")].map(x=>+x.innerText||0);
-    grafico.update();
-  });
-});
-
-// ================= SISTEMA ELEMENTAL =================
+/* ================= TABELA ELEMENTAL COMPLETA (ORIGINAL) ================= */
 const tabelaElemental = {
   Fogo:{fraco:"Água",forte:"Planta"},
   Água:{fraco:"Raio",forte:"Fogo"},
@@ -264,65 +231,116 @@ const tabelaElemental = {
 };
 
 function salvarElemento(){
-  localStorage.setItem(`elemento-${repNome}`, elemento.value);
+  localStorage.setItem("elemento-"+repNome, elemento.value);
   atualizarInfoElemento();
+  salvarAutomatico();
 }
-
 function atualizarInfoElemento(){
-  const el = localStorage.getItem(`elemento-${repNome}`);
-  if(el && tabelaElemental[el]){
-    infoElemento.innerText =
-      `Fraqueza: ${tabelaElemental[el].fraco} | Vantagem: ${tabelaElemental[el].forte}`;
-  } else infoElemento.innerText = "—";
+  const el = localStorage.getItem("elemento-"+repNome);
+  infoElemento.innerText = (el && tabelaElemental[el])
+    ? `Fraqueza: ${tabelaElemental[el].fraco} | Vantagem: ${tabelaElemental[el].forte}`
+    : "—";
 }
 
-// ===== MECÂNICA DE FRAQUEZA / VANTAGEM =====
-function calcularMultiplicadorElemento(atacante, defensor){
-  if(!tabelaElemental[atacante]) return 1;
-  if(tabelaElemental[atacante].forte === defensor) return 1.5;
-  if(tabelaElemental[atacante].fraco === defensor) return 0.5;
-  return 1;
+/* ================= VIDA / MANA ================= */
+function alterarHP(v){
+  let a=+hpAtual.innerText||0,m=+hpMax.innerText||0;
+  a=Math.min(Math.max(a+v,0),m);
+  hpAtual.innerText=a;
+  if(a>0)window.hpAvisado=false;
+  atualizarBarras();
+  salvarAutomatico();
+}
+function alterarMP(v){
+  let a=+mpAtual.innerText||0,m=+mpMax.innerText||0;
+  a=Math.min(Math.max(a+v,0),m);
+  mpAtual.innerText=a;
+  atualizarBarras();
+  salvarAutomatico();
+}
+function atualizarBarras(){
+  let hpA=+hpAtual.innerText||0,hpM=+hpMax.innerText||1;
+  let mpA=+mpAtual.innerText||0,mpM=+mpMax.innerText||1;
+  hpBar.style.width=(hpA/hpM*100)+"%";
+  mpBar.style.width=(mpA/mpM*100)+"%";
+  hpBar.style.background=(hpA/hpM<=.25)?"#e74c3c":"#c0392b";
+  if(hpA===0&&!window.hpAvisado){
+    window.hpAvisado=true;
+    alert("⚠️ ATENÇÃO! O personagem chegou a 0 de HP!");
+  }
 }
 
-// ================= IMAGEM =================
-const imgPersonagem = document.querySelector(".topo img");
-
+/* ================= IMAGEM ================= */
 function definirImagem(){
-  const link = prompt("Cole o link da imagem:");
-  if(link) imgPersonagem.src = link;
+  const l=prompt("Cole o link da imagem:");
+  if(l){imgPersonagem.src=l;salvarAutomatico();}
 }
 function removerImagem(){
   imgPersonagem.src="https://via.placeholder.com/180x240";
+  salvarAutomatico();
 }
 
-// ================= SALVAR / CARREGAR =================
-function salvarFicha(){
-  localStorage.setItem(`imagem-${repNome}`, imgPersonagem.src);
-  document.querySelectorAll("[contenteditable]").forEach(el=>{
-    if(el.id) localStorage.setItem(`${el.id}-${repNome}`, el.innerText);
+/* ================= GRÁFICO ================= */
+function getValores(){return [...document.querySelectorAll(".atrib")].map(e=>+e.innerText||0);}
+function indiceDominante(v){return v.indexOf(Math.max(...v));}
+
+const grafico=new Chart(document.getElementById("grafico"),{
+  type:"radar",
+  data:{
+    labels:["Força","Destreza","Constituição","Inteligência","Sabedoria","Carisma"],
+    datasets:[{
+      data:getValores(),
+      backgroundColor:"rgba(0,200,255,.2)",
+      borderColor:"#00c8ff",
+      pointBackgroundColor:"#00c8ff",
+      pointRadius:5
+    }]
+  },
+  options:{scales:{r:{beginAtZero:true,max:100}}}
+});
+
+function atualizarGrafico(){
+  const v=getValores(),d=indiceDominante(v);
+  grafico.data.datasets[0].data=v;
+  grafico.data.datasets[0].pointBackgroundColor=
+    v.map((_,i)=>i===d?"#2ecc71":"#00c8ff");
+  grafico.update();
+  localStorage.setItem("atributos-"+repNome,JSON.stringify(v));
+}
+document.querySelectorAll(".atrib").forEach(e=>e.addEventListener("input",()=>{
+  atualizarGrafico();
+  salvarAutomatico();
+}));
+
+/* ================= SALVAMENTO AUTOMÁTICO ================= */
+function salvarAutomatico(){
+  document.querySelectorAll("[contenteditable]").forEach(e=>{
+    if(e.id)localStorage.setItem(e.id+"-"+repNome,e.innerText);
   });
-  localStorage.setItem(`elemento-${repNome}`, elemento.value);
-  alert("Ficha salva!");
+  localStorage.setItem("img-"+repNome,imgPersonagem.src);
+  localStorage.setItem("elemento-"+repNome,elemento.value);
 }
 
+/* ================= CARREGAR ================= */
 function carregarFicha(){
-  const img = localStorage.getItem(`imagem-${repNome}`);
-  if(img) imgPersonagem.src = img;
-
-  document.querySelectorAll("[contenteditable]").forEach(el=>{
-    const val = localStorage.getItem(`${el.id}-${repNome}`);
-    if(val) el.innerText = val;
+  document.querySelectorAll("[contenteditable]").forEach(e=>{
+    const v=localStorage.getItem(e.id+"-"+repNome);
+    if(v)e.innerText=v;
   });
-
-  const el = localStorage.getItem(`elemento-${repNome}`);
-  if(el) elemento.value = el;
-
+  const el=localStorage.getItem("elemento-"+repNome);
+  if(el)elemento.value=el;
+  const img=localStorage.getItem("img-"+repNome);
+  if(img)imgPersonagem.src=img;
+  const atr=localStorage.getItem("atributos-"+repNome);
+  if(atr){
+    const v=JSON.parse(atr);
+    document.querySelectorAll(".atrib").forEach((e,i)=>e.innerText=v[i]);
+  }
   atualizarInfoElemento();
   atualizarBarras();
+  atualizarGrafico();
 }
-
-window.onload = carregarFicha;
+window.onload=carregarFicha;
 </script>
-
 </body>
 </html>
